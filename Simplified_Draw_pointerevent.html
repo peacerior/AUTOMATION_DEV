@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>SYNO draw</title>
+
+
+
+  <link rel="stylesheet" href="css/style.css">
+
+
+</head>
+<style>
+  /* Disable intrinsic user agent touch behaviors (such as panning or zooming) so
+  that all events on the canvas element are given to the application instead. */
+
+  canvas {
+    touch-action: none;
+  }
+</style>
+
+<body>
+  <canvas id="drawSurface" width="1250px" height="500px" style="border:1px solid black;"></canvas>
+  <p id='info'>asd</p>
+  <p id='linedata'></p>
+  <!-- <p id="down-output">No events fired yet</p> -->
+  <script>
+    var canvas = document.getElementById('drawSurface');
+    var ctx = canvas.getContext('2d')
+    var down = document.getElementById('info');
+    var linInfo = document.getElementById('linedata');
+    var points = [],
+      lines = [],
+      frame = [],
+      isDrawing = false;
+    ctx.lineCap = 'round';
+    ctx.font = "10px Arial";
+    ctx.fillStyle = "red"
+
+    if (window.PointerEvent) {
+      function handler(e) {}
+      canvas.addEventListener('pointerdown', function Pionterdown(e) {
+        isDrawing = true;
+        points.push({
+          x: e.clientX,
+          y: e.clientY,
+          p: e.pressure
+        });
+      });
+      canvas.addEventListener('pointerup', function PionterUp(e) {
+        isDrawing = false;
+        lines.push(points);
+        points = [];
+        // down.innerHTML = e.type + ' with ' + e.pointerType + '<br>'+' pressure: ' + e.pressure + '<br>'+JSON.stringify(lines)
+        // + '<br>lines#: '+lines.length;
+        linInfo.innerHTML += 'line ' + lines.length + ' = ' + lines[lines.length - 1][0].p + '<br>'
+        drawFrame()
+      });
+      canvas.addEventListener('pointermove', function PionterMove(e) {
+        if (isDrawing) {
+          points.push({
+            x: e.clientX,
+            y: e.clientY,
+            p: e.pressure
+          });
+          ctx.beginPath();
+          ctx.arc(e.clientX, e.clientY, e.pressure * 10, 0, 2 * Math.PI);
+          ctx.fillText(e.pressure, e.clientX, e.clientY);
+          ctx.fill()
+
+        } else {
+          down.innerHTML = e.clientX + ' ' + e.clientY
+
+        }
+      });
+      // canvas.addEventListener('pointerleave', handler);
+      canvas.addEventListener('pointerenter', handler);
+      canvas.addEventListener('pointercancel', handler);
+    } else {
+      canvas.textContent = 'This browser does not support Pointer Events';
+    }
+
+    function drawLines() {
+      // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.beginPath();
+      ctx.moveTo(points[points.length - 1].x, points[points.length - 1].y)
+      ctx.lineTo(e.clientX, e.clientY)
+      ctx.lineWidth(e.pressure)
+      ctx.stroke();
+      down.innerHTML = points[points.length - 1].x
+      // document.getElementById('linedata').innerHTML += ctx.lineWidth;
+    }
+
+    function drawFrame() {
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      for (var i = 0; i < lines.length; i++) {
+        ctx.beginPath();
+        ctx.lineWidth = 10 * lines[i][0].p;
+        // ctx.moveTo(lines[i][0].x, lines[i][0].y);
+        for (var j = 1; j < lines[i].length; j++) {
+          ctx.beginPath();
+          ctx.lineWidth = 10 * lines[i][j].p;
+          ctx.moveTo(lines[i][j - 1].x, lines[i][j - 1].y)
+          ctx.lineTo(lines[i][j].x, lines[i][j].y)
+          // ctx.lineTo(lines[i][1].x,lines[i][1].y);
+          ctx.stroke();
+          document.getElementById('linedata').innerHTML += ctx.lineWidth;
+
+        }
+      };
+    }
+  </script>
+</body>
+
+</html>

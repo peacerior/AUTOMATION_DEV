@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Frame rate control with requestAnimationFrame</title>
+
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css"> -->
+
+
+  <style>
+    /* NOTE: The styles were added inline because Prefixfree needs access to your styles and they must be inlined if they are on local disk! */
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      background-image: linear-gradient(#000, #993366);
+      color: #fff;
+    }
+
+    #wrap {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    /* Specifics */
+
+    #items {
+      width: 460px;
+      margin: 2em auto;
+      border: 1px solid white;
+    }
+
+    #items div {
+      width: 20px;
+      height: 20px;
+      margin: 20px;
+      background: white;
+      color: black;
+      font-family: monospace;
+      font-size: 14px;
+    }
+
+    p {
+      line-height: 1.5;
+      font-size: 0.9em;
+    }
+  </style>
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script> -->
+
+</head>
+
+<body>
+
+  <div id="wrap">
+    <h1>Frame rate control and motion with <code>requestAnimationFrame</code></h1>
+
+    <div id="items">
+
+      <div></div>
+      <div></div>
+      <div></div>
+
+    </div>
+
+    <p>So often I see JS game/animation loops, running off <code>requestAnimationFrame</code>, which update logic AND render every frame, without enforcng a consistent refresh rate. This means that your game will actually execute slower (including AI, actual
+      speed of movement, etc) for someone with a lower refresh rate (say, someone on a low-powered device).</p>
+    <p>This Timer class enforces a set rate of refresh so that even if the frame rate is sub-optimal, the actual speed of updates (e.g. to position) remains constant. The three boxes are all moving at the same relative speed, even though the motion itself
+      may not be as smooth for lower FPSes.</p>
+  </div>
+  <!-- <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script> -->
+
+
+
+  <script src="js/index.js"></script>
+
+
+
+
+</body>
+
+</html>
