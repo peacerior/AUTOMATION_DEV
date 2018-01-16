@@ -18,16 +18,27 @@
   canvas {
     touch-action: none;
   }
+
+  #drawSurface {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    color: #000;
+  }
 </style>
 
 <body>
-  <canvas id="drawSurface" width="1250px" height="500px" style="border:1px solid black;"></canvas>
+  <canvas id="drawSurface" width="2048px" height="872px" style="border:1px solid black;"></canvas>
   <p id='info'>asd</p>
   <p id='linedata'></p>
   <!-- <p id="down-output">No events fired yet</p> -->
   <script>
     var canvas = document.getElementById('drawSurface');
     var ctx = canvas.getContext('2d')
+    var rect = canvas.getBoundingClientRect();
+
     var down = document.getElementById('info');
     var linInfo = document.getElementById('linedata');
     var points = [],
@@ -42,6 +53,7 @@
     ctx.fillStyle = "red"
     ctx.strokeStyle = 'rgba(0, 0, 0, 1)'
 
+
     function createButton(txt) {
 
       var btn = document.createElement("BUTTON"); // Create a <button> element
@@ -55,8 +67,8 @@
       canvas.addEventListener('pointerdown', function Pionterdown(e) {
         isDrawing = true;
         points.push({
-          x: e.clientX,
-          y: e.clientY,
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
           p: e.pressure
         });
       });
@@ -71,21 +83,16 @@
       canvas.addEventListener('pointermove', function PionterMove(e) {
         if (isDrawing) {
           points.push({
-            x: e.clientX,
-            y: e.clientY,
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
             p: e.pressure
           });
           ctx.beginPath();
-          ctx.arc(e.clientX, e.clientY, e.pressure * 10, 0, 2 * Math.PI);
-          ctx.fillText(e.pressure, e.clientX, e.clientY);
+          ctx.arc(e.clientX - rect.left, e.clientY - rect.top, e.pressure * 10, 0, 2 * Math.PI);
+          ctx.fillText(e.pressure, e.clientX - rect.left, e.clientY - rect.top);
           ctx.fill()
-          // lines[counter].push({
-          //   x: e.clientX,
-          //   y: e.clientY,
-          //   p: e.pressure
-          // });
         } else {
-          down.innerHTML = JSON.stringify(lines[counter][0].p) // + ' ' + lines[counter][0].x //e.clientX + ' ' + e.clientY
+          down.innerHTML = JSON.stringify(lines[counter][0].p) // + ' ' + lines[counter][0].x //e.clientX - rect.left + ' ' + e.clientY - rect.top
 
         }
       });
@@ -99,7 +106,7 @@
       // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       ctx.beginPath();
       ctx.moveTo(points[points.length - 1].x, points[points.length - 1].y)
-      ctx.lineTo(e.clientX, e.clientY)
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top)
       ctx.lineWidth(e.pressure)
       ctx.stroke();
       down.innerHTML = points[points.length - 1].x
@@ -144,7 +151,7 @@
             ctx.beginPath();
             ctx.moveTo(lines[lines.length - 1][i - 1].x, lines[lines.length - 1][i - 1].y)
             ctx.lineTo(lines[lines.length - 1][i].x, lines[lines.length - 1][i].y)
-            ctx.lineWidth = lines[lines.length - 1].slice(-1)[0].p * 30
+            ctx.lineWidth = lines[lines.length - 1][i].p * 30
             ctx.stroke();
           }
           counter += 1

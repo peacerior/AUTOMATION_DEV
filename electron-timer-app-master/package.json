@@ -1,0 +1,17 @@
+{
+  "name": "electron-test",
+  "version": "1.0.0",
+  "description": "Simple timer app developed with [Electron](http://electron.atom.io/).",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "faruk Sabanovic rudnik@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.13.0"
+  },
+  "devDependencies": {
+    "electron-packager": "^10.1.1"
+  }
+}
