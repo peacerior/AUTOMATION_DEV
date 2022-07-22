@@ -1,155 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <title>mental canvas viewer</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-  <style>
-    body {
-      margin: 0px;
-      background-color: #000000;
-      overflow: hidden;
-      touch-action: none;
-      #-ms-touch-action: none;
-    }
+    <head>
+        <title>mental canvas viewer</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+        <style>
+            body {
+                margin: 0;
+                background-color: #000000;
+                overflow: hidden;
+                touch-action: none;
+                #-ms-touch-action: none;
+            }
+            input.toolbutton {
+                margin: 10px;
+                width: 40px;
+                vertical-align: middle;
+            }
+            img.logo {
+                margin: 10px 25px 10px 10px;
+                height: 40px;
+                vertical-align: middle;
+                position: absolute;
+                right: 0;
+            }
+            p {
+                margin: 1px;
+            }
+            /* for chrome */
+            input.toolbutton:focus {
+                outline: none;
+            }
+            span.toolbar-instructions {
+                color: white;
+                margin-left: 50px;
+                font-family: sans-serif;
+                vertical-align: middle;
+            }
+            p.toolbar-instructions-below {
+                display: none;
+            }
+            div.toolbar-instructions-below {
+                display: none;
+            }
+            /* For 480px or less */
+            @media screen and (max-width: 480px) {
+                /* Smaller buttons and logo, especially for 320px wide devices like iPhone SE */
+                input.toolbutton {
+                    margin: 5px;
+                    width: 30px;
+                }
+                img.logo {
+                    margin: 5px 25px 5px 5px;
+                    height: 30px;
+                }
+            }
+            @media screen and (max-width: 900px) {
+                span.toolbar-instructions {
+                    display: none;
+                }
+            }
+            @media screen and (max-width: 900px) and (min-width: 700px) {
+                div.toolbar-instructions-below {
+                    display: inline;
+                    margin: 10px 10px 20px;
+                    text-align: center;
+                    padding-bottom: 20px;
+                }
+                span.toolbar-instructions {
+                    display: none;
+                }
+                p.toolbar-instructions-below {
+                    color: white;
+                    font-family: sans-serif;
+                    text-align: center;
+                    display: inline;
+                    margin: 0 0 20px;
+                    padding-bottom: 20px;
+                }
+            }
+            div.loading-canvas {
+                background-color: white;
+                text-align: center;
+                font-family: sans-serif;
+                font-size: x-large;
+                position: absolute;
+                display: table;
+                width: 100%;
+                height: 90%;
+            }
+            div.loading-canvas div {
+                display: table-cell;
+                vertical-align: middle;
+            }
+            .loading-error-msg {
+                font-size: small;
+                display: none;
+            }
+        </style>
+    </head>
 
-    input.toolbutton {
-      margin: 10px;
-      width: 40px;
-      vertical-align: middle;
-    }
+    <body>
+        <p>
+            <input type="image" id="play_pause-button" value="Play" src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/Play_50px.png" class="toolbutton" onclick="play_pauseClick(true)">
+            <input type="image" id="reset-button" value="Reset" src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/Restart_50px.png" class="toolbutton" onclick="resetClick()">
 
+            <input type="image" id="prev-bookmark" value="PrevBookmark" src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/Prev_50px.png" class="toolbutton" onclick="prevBookmark()"/>
+            <input type="image" id="next-bookmark" value="NextBookmark" src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/Next_50px.png" class="toolbutton" onclick="nextBookmark()"/>
+            <span class="toolbar-instructions" id="toolbar-instructions">Drag one finger to rotate, two fingers to pan. Pinch to zoom.</span>
+            <a href="http://mentalcanvas.com"><img src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/logo_512.png" class="logo"/></a>
+        </p>
+        <div class="toolbar-instructions-below">
+            <p class="toolbar-instructions-below" id="toolbar-instructions-below">Drag one finger to rotate, two fingers to pan. Pinch to zoom.</p>
+        </div>
+        <div class="loading-canvas" id="loading-canvas">
+            <div>
+                <img src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/logo_512.png" alt="Mental Canvas" width="256"/>
+                <p id="loading-status" class="loading-status">Loading scene...</p>
+                <p id="loading-error-msg" class="loading-error-msg"></p>
+            </div>
+        </div>
 
-    img.logo {
-      margin: 10px;
-      margin-right: 25px;
-      height: 40px;
-      vertical-align: middle;
-      position: absolute;
-      right: 0px;
-    }
+        <script type="text/javascript">
+            var mc_basepath = "./ext";
+        </script>
+        <script src="ms-MINDCANVAS 3D PLAYER.JS"></script>
+        <!-- <script src="https://mentalcanvasweb.blob.core.windows.net/viewer/mc7.js"></script> -->
 
-    p {
-      margin: 1px 1px 1px 1px;
-    }
-
-    /* for chrome */
-
-    input.toolbutton:focus {
-      outline: none;
-    }
-
-
-    span.toolbar-instructions {
-      color: white;
-      margin-left: 50px;
-      font-family: sans-serif;
-      vertical-align: middle;
-    }
-
-    p.toolbar-instructions-below {
-      display: none;
-    }
-
-    div.toolbar-instructions-below {
-      display: none;
-    }
-
-
-    /* For 480px or less */
-
-    @media screen and (max-width: 480px) {
-      /* Smaller buttons and logo, especially for 320px wide devices like iPhone SE */
-      input.toolbutton {
-        margin: 5px;
-        width: 30px;
-      }
-      img.logo {
-        margin: 5px;
-        margin-right: 25px;
-        height: 30px;
-      }
-    }
-
-    @media screen and (max-width: 900px) {
-      span.toolbar-instructions {
-        display: none;
-      }
-    }
-
-    @media screen and (max-width: 900px) and (min-width: 700px) {
-      div.toolbar-instructions-below {
-        display: inline;
-        margin: 10px 10px 20px 10px;
-        text-align: center;
-        padding-bottom: 20px;
-      }
-
-      span.toolbar-instructions {
-        display: none;
-      }
-
-      p.toolbar-instructions-below {
-        color: white;
-        font-family: sans-serif;
-        text-align: center;
-        display: inline;
-        margin: 0px 0px 20px 0px;
-        padding-bottom: 20px;
-      }
-    }
-
-    div.loading-canvas {
-      background-color: white;
-      text-align: center;
-      font-family: sans-serif;
-      font-size: x-large;
-      position: absolute;
-      display: table;
-      width: 100%;
-      height: 90%;
-    }
-
-    div.loading-canvas div {
-      display: table-cell;
-      vertical-align: middle;
-    }
-
-    .loading-error-msg {
-      font-size: small;
-      display: none;
-    }
-  </style>
-</head>
-
-<body>
-  <p>
-    <input type="image" id="play_pause-button" value="Play" src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/Play_50px.png" class="toolbutton" onclick="play_pauseClick(true)">
-    <input type="image" id="reset-button" value="Reset" src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/Restart_50px.png" class="toolbutton" onclick="resetClick()">
-
-    <input type="image" id="prev-bookmark" value="PrevBookmark" src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/Prev_50px.png" class="toolbutton" onclick="prevBookmark()" />
-    <input type="image" id="next-bookmark" value="NextBookmark" src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/Next_50px.png" class="toolbutton" onclick="nextBookmark()" />
-    <span class="toolbar-instructions" id="toolbar-instructions">Drag one finger to rotate, two fingers to pan.  Pinch to zoom.</span>
-    <a href="http://mentalcanvas.com"><img src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/logo_512.png" class="logo" /></a>
-  </p>
-  <div class="toolbar-instructions-below">
-    <p class="toolbar-instructions-below" id="toolbar-instructions-below">Drag one finger to rotate, two fingers to pan. Pinch to zoom.</p>
-  </div>
-  <div class="loading-canvas" id="loading-canvas">
-    <div>
-      <img src="https://mentalcanvasweb.blob.core.windows.net/viewer/assets/logo_512.png" alt="Mental Canvas" width="256" />
-      <p id="loading-status" class="loading-status">Loading scene...</p>
-      <p id="loading-error-msg" class="loading-error-msg"></p>
-    </div>
-  </div>
-
-
-  <script type="text/javascript">
-    var mc_basepath = "./ext";
-  </script>
-  <script src="https://mentalcanvasweb.blob.core.windows.net/viewer/mc7.js"></script>
-
-</body>
+    </body>
 
 </html>
